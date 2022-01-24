@@ -1,0 +1,11 @@
+---
+- name: Install IDM module
+  dnf:
+    name: "{{ freeipa_IDM_idm_module }}"
+    state: present
+#
+- name: Install FreeIPA server packages
+  yum:
+    name: "{{ freeipa_IDM_ipaserver_pkg }}"
+    state: present
+...

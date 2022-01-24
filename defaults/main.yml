@@ -1,0 +1,10 @@
+---
+freeipa_IDM_domain: almircandidorocky.com
+#
+freeipa_IDM_realm: IPA.ALMIRCANDIDOROCKY.COM
+#
+freeipa_IDM_ds_password: freeipa_password123
+#
+freeipa_IDM_admin_password: freeipa_password123
+#
+freeipa_IDM_ipa_admin: admin

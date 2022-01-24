@@ -1,0 +1,25 @@
+---
+dependencies: []
+#
+galaxy_info:
+  author: acandid
+  description: Install and configuring FreeIPA/IDM on Rocky Linux.
+  company: "Almir Candido"
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.9
+  platforms:
+    - name: Rocky Linux
+      versions:
+        - 8
+#
+  galaxy_tags:
+    - freeipa
+    - idm
+    - secuty
+    - identity
+    - rocky
+    - centos
+    - redhat
+    - linux
+#
+allow_duplicates: true

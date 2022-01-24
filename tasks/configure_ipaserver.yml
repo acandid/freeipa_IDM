@@ -1,0 +1,6 @@
+---
+- name: Configure FreeIPA Server
+  shell: "ipa-server-install --domain={{ freeipa_IDM_domain }} --realm={{ freeipa_IDM_realm }} --ds-password={{ freeipa_IDM_ds_password }} --admin-password={{ freeipa_IDM_admin_password }} --setup-dns --forwarder=8.8.8.8 --mkhomedir --unattended"
+  args:
+    warn: false
+...

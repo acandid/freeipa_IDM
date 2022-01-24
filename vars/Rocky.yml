@@ -1,0 +1,10 @@
+---
+# Enable the IDM module
+freeipa_IDM_idm_module: '@idm:DL1'
+#
+freeipa_IDM_ipaserver_pkg:
+  - ipa-server
+  - ipa-server-dns 
+  - bind-dyndb-ldap
+#
+freeipa_IDM_ipaclient_pkg: ipa-client

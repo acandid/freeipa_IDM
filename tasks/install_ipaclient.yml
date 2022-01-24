@@ -1,0 +1,6 @@
+---
+- name: Install IPA Client packages on Rocky Linux and RedHat/Centos
+  yum:
+    name: "{{ freeipa_IDM_ipaclient_pkg }}"
+    state: present
+...

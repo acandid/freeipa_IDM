@@ -1,0 +1,6 @@
+---
+- name: Configure IPA Client on Rocky Linux and RedHat/Centos
+  shell: "ipa-client-install --domain={{ freeipa_IDM_domain }} --realm={{ freeipa_IDM_realm }} --principal={{ freeipa_IDM_ipa_admin }} --password={{ freeipa_IDM_admin_password }} --mkhomedir --server={{ hostvars[inventory_hostname]['groups']['ipaserver'][0] }} --unattended"
+  args:
+    warn: false
+...

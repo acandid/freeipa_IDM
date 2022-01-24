@@ -1,0 +1,12 @@
+---
+- name: Configure IPA Client on ipareplica
+  shell: "ipa-client-install --domain={{ freeipa_IDM_domain }} --realm={{ freeipa_IDM_realm }} --principal={{ freeipa_IDM_ipa_admin }} --password={{ freeipa_IDM_admin_password }} --mkhomedir --server={{ hostvars[inventory_hostname]['groups']['ipaserver'][0] }} --unattended"
+  args:
+    warn: false
+
+
+- name: Configure freeIPA/IDM Replica Server
+  shell: "ipa-replica-install --principal {{ freeipa_IDM_ipa_admin }} --admin-password {{ freeipa_IDM_admin_password }} --domain={{ freeipa_IDM_domain }} --server {{ hostvars[inventory_hostname]['groups']['ipaserver'][0] }} --setup-ca --unattended"
+  args:
+    warn: false
+...

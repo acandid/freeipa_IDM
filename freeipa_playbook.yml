@@ -1,0 +1,108 @@
+---
+- name: Install FreeIPA/IDM server and Client
+  hosts: ipaserver,ipareplica,ipaclient
+  become: yes
+  vars_files:
+    - defaults/main.yml
+  tasks:
+    
+    - name: include Variables
+      include_vars: "vars/{{ ansible_facts['os_family'] }}.yml"
+      tags:
+        - install_ipaserver
+        - install_ipareplica
+        - install_ipaclient
+#
+    - name: Add IPA server IP as DNS server
+      nmcli:
+        conn_name: "{{ ansible_default_ipv4.interface }}"
+        ifname: "{{ ansible_default_ipv4.interface }}"
+        type: ethernet
+        dns4:
+          - 8.8.8.8
+          - "{{ hostvars[ groups['ipaserver'][0] ]['ansible_facts']['default_ipv4']['address'] }}"
+        state: present
+#
+    - name: Enable new DNS IP
+      shell: nmcli conn up "{{ ansible_default_ipv4.interface }}"
+      args:
+        warn: false
+#
+    - name: Create file hosts
+      template:
+        src: templates/hosts.j2
+        dest: /etc/hosts
+#
+    - name: Checks if you have the IPA server running, if there are no changes will be made
+      shell: ipactl status
+      register: result
+      ignore_errors: yes
+      when: inventory_hostname in groups['ipaserver'] or inventory_hostname in groups['ipareplica']
+      args:
+        warn: false
+#
+    - debug:
+        msg: IPA server is not installed, it will be installed next        
+      when:
+        - inventory_hostname in groups['ipaserver'] or inventory_hostname in groups['ipareplica']
+        - result.rc != 0
+#
+    - name: IPA server is running, no new installation will be performed.
+      debug:
+        var: result.stdout_lines
+      when: 
+        - inventory_hostname in groups['ipaserver'] or inventory_hostname in groups['ipareplica']
+        - result.rc == 0    
+#
+    - name: Checks if you have the IPA client working correctly, if there is no change it will be made
+      shell: echo "{{ freeipa_IDM_admin_password }}" | kinit -f admin
+      ignore_errors: yes
+      register: cred_result
+      changed_when: false
+      when: inventory_hostname in groups['ipaclient']
+      args:
+        warn: false
+#
+    - name: Import Task install_ipaserver.yml
+      import_tasks: tasks/install_ipaserver.yml
+      tags: install_ipaserver
+      when: 
+        - inventory_hostname in groups['ipaserver'] or inventory_hostname in groups['ipareplica']
+        - result.rc != 0
+#
+    - name: Import Task configure_ipaserver.yml
+      import_tasks: tasks/configure_ipaserver.yml
+      tags: install_ipaserver
+      when: 
+        - inventory_hostname in groups['ipaserver']
+        - result.rc != 0
+#
+    - name: Import Task configure_ipareplica.yml
+      import_tasks: tasks/configure_ipareplica.yml
+      tags: install_ipareplica
+      when: 
+        - inventory_hostname in groups['ipareplica']
+        - result.rc != 0
+#
+    - name: Import Task install_ipaclient.yml
+      import_tasks: tasks/install_ipaclient.yml
+      tags: install_ipaclient
+      when: 
+        - inventory_hostname in groups['ipaclient']
+        - cred_result.rc != 0
+#
+    - name: Import Task configure_ipaclient.yml
+      import_tasks: tasks/configure_ipaclient.yml
+      tags: install_ipaclient
+      when: 
+        - inventory_hostname in groups['ipaclient']
+        - cred_result.rc != 0
+#
+    - debug:
+        msg: "Attention IPA client is already installed and running on these server"
+      when: 
+        - inventory_hostname in groups['ipaclient']
+        - cred_result.rc == 0
+
+
+...
